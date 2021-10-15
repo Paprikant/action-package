@@ -3,6 +3,9 @@ name: Build Action
 on:
   release:
     types: [published]
+  push:
+    branches:
+      - main
 
 jobs:
   push_to_registry:
@@ -14,6 +17,9 @@ jobs:
 
       - name: Check out Repository
         uses: actions/checkout@v2
+        
+      - name: Get Go Packages
+        run: go mod download
 
       - name: Make Go binary
         run: go build -o build-packages .
