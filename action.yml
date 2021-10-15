@@ -1,0 +1,6 @@
+# action.yml
+name: 'Create Packages'
+description: 'creates debian packages using the tool fpm'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
