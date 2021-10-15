@@ -12,15 +12,14 @@ import (
 
 // fomConfig contains all configuration needed to create a package using fpm
 type FPMConfig struct {
-
-	Packages []struct{
+	Packages []struct {
 
 		// the name of the target package
 		Name string
 
 		// section Source of the fpm config
 		// defines where and how to source the contents of the package
-		Source struct{
+		Source struct {
 			// source mode specifies how to gather the files contained in the package
 			//
 			// "dir":
@@ -32,11 +31,11 @@ type FPMConfig struct {
 
 			// Excludes is used with mode "dir"
 			// paths to files that are explicitly not part of the packages source files
-			Excludes  []string `yaml:"excludes"`
+			Excludes []string `yaml:"excludes"`
 		} `yaml:"source"`
 
 		// section Target of the fpm config
-		Target struct{
+		Target struct {
 			// Mode specifies the kind of package to create *REQUIRED*
 			//
 			// "deb":
@@ -46,60 +45,55 @@ type FPMConfig struct {
 
 			// DEBMetadata
 			// metadata specific to debian packages
-			DEBMetadata struct{
+			DEBMetadata struct {
 				// package Version *REQUIRED*
-				Version 					string		`yaml:"version"`
+				Version string `yaml:"version"`
 
 				// Maintainer of the package *OPTIONAL*
 				// should be an email address
-				Maintainer 					string		`yaml:"maintainer"`
+				Maintainer string `yaml:"maintainer"`
 
 				// Vendor of the package *OPTIONAL*
-				Vendor 						string     `yaml:"vendor"`
+				Vendor string `yaml:"vendor"`
 
 				// project URL *OPTIONAL*
 				// will be displayed in the packages metadata alongside the description
-				URL 						string		`yaml:"url"`
+				URL string `yaml:"url"`
 
-				License						string      `yaml:"license"`
+				License string `yaml:"license"`
 
-				Description					string		`yaml:"description"`
+				Description string `yaml:"description"`
 
 				// special file tags
-				Directories 				[]string	`yaml:"directories"`
-				ConfigFiles 				[]string	`yaml:"config_files"`
-				Systemd 					[]string	`yaml:"systemd"`
+				Directories []string `yaml:"directories"`
+				ConfigFiles []string `yaml:"config_files"`
+				Systemd     []string `yaml:"systemd"`
 
 				// dependency management
-				Depends				      	[]string `yaml:"depends"`
-				Suggests     				[]string `yaml:"suggests"`
-				NoAutoDepends 				bool     `yaml:"no_auto_depends"`
-				Conflicts     				[]string `yaml:"conflicts"`
-
+				Depends       []string `yaml:"depends"`
+				Suggests      []string `yaml:"suggests"`
+				NoAutoDepends bool     `yaml:"no_auto_depends"`
+				Conflicts     []string `yaml:"conflicts"`
 
 				// script tags
-				BeforeInstall				string 		`yaml:"before_install"`
-				AfterInstall    			string
+				BeforeInstall string `yaml:"before_install"`
+				AfterInstall  string
 
-				BeforeRemove				string 		`yaml:"before_remove"`
-				AfterRemove					string		`yaml:"after_remove"`
+				BeforeRemove string `yaml:"before_remove"`
+				AfterRemove  string `yaml:"after_remove"`
 
-				BeforeUpgrade				string		`yaml:"before_upgrade"`
-				AfterUpgrade				string		`yaml:"after_upgrade"`
+				BeforeUpgrade string `yaml:"before_upgrade"`
+				AfterUpgrade  string `yaml:"after_upgrade"`
 
-
-				SystemdEnable				bool		`yaml:"systemd_enable"`
-				SystemdAutoStart			bool		`yaml:"systemd_auto_start"`
-				SystemdRestartAfterUpgrade	bool		`yaml:"systemd_restart_after_upgrade"`
-
+				SystemdEnable              bool `yaml:"systemd_enable"`
+				SystemdAutoStart           bool `yaml:"systemd_auto_start"`
+				SystemdRestartAfterUpgrade bool `yaml:"systemd_restart_after_upgrade"`
 			} `yaml:"deb_metadata"`
 		}
 
 		Arguments []string
 	}
-
 }
-
 
 // function readFile accepts a file path and reads the fpm configuration from that file
 func (c *FPMConfig) ReadFile(path string) error {
@@ -121,7 +115,6 @@ func (c *FPMConfig) ReadFile(path string) error {
 	return nil
 }
 
-
 // function contains decides if a given slice contains a given string
 // arguments are named h (for haystack) and n (for needle)
 // this function is not provided by golang and will be used in the check function below
@@ -140,8 +133,8 @@ func contains(h []string, n string) bool {
 // configError to provide structure to the output of the check method
 type ConfigError struct {
 	packageEntry string
-	field string
-	message string
+	field        string
+	message      string
 }
 
 // method Error provides a message for the ConfigError (and implements the Error interface)
@@ -165,18 +158,17 @@ func (c *FPMConfig) check() error {
 		// every package needs a name
 		if p.Name == "" {
 			return ConfigError{
-				field: fmt.Sprintf("package[%d].name", i),
+				field:   fmt.Sprintf("package[%d].name", i),
 				message: "name is required",
 			}
 		}
 
-
 		// check if source mode is set to a valid mode
 		validSourceModes := []string{"dir"}
-		if ! contains(validSourceModes, p.Source.Mode) {
+		if !contains(validSourceModes, p.Source.Mode) {
 			return ConfigError{
 				packageEntry: p.Name,
-				field: "source.mode",
+				field:        "source.mode",
 				message: fmt.Sprintf(
 					"source mode is required and may contain %s", strings.Join(validSourceModes, "|")),
 			}
@@ -189,19 +181,18 @@ func (c *FPMConfig) check() error {
 			if len(p.Arguments) < 1 {
 				return ConfigError{
 					packageEntry: p.Name,
-					field: "arguments",
-					message: "for target mode dir at least one argument is required (a directory to package)",
+					field:        "arguments",
+					message:      "for target mode dir at least one argument is required (a directory to package)",
 				}
 			}
 		}
 
-
 		// check if target mode is set to a valid mode
 		validTargetModes := []string{"deb"}
-		if ! contains(validTargetModes, p.Target.Mode) {
+		if !contains(validTargetModes, p.Target.Mode) {
 			return ConfigError{
 				packageEntry: p.Name,
-				field: "target.mode",
+				field:        "target.mode",
 				message: fmt.Sprintf(
 					"target mode is required and may contain %s", strings.Join(validSourceModes, "|")),
 			}
@@ -212,8 +203,8 @@ func (c *FPMConfig) check() error {
 			if p.Target.DEBMetadata.Version == "" {
 				return ConfigError{
 					packageEntry: p.Name,
-					field: "target.deb_metadata.version",
-					message: "debian packages require a version",
+					field:        "target.deb_metadata.version",
+					message:      "debian packages require a version",
 				}
 			}
 		}
@@ -261,10 +252,6 @@ func (c *FPMConfig) build() error {
 
 		args = append(args, "-v", version)
 
-
-
-
-
 		// special flags for the "dir" source mode
 		if p.Source.Mode == "dir" {
 			// append all exclude patterns to the command
@@ -292,7 +279,6 @@ func (c *FPMConfig) build() error {
 				args = append(args, "--license", p.Target.DEBMetadata.License)
 			}
 
-
 			// tag important files
 			for _, d := range p.Target.DEBMetadata.Directories {
 				args = append(args, "--directories", d)
@@ -304,7 +290,6 @@ func (c *FPMConfig) build() error {
 				args = append(args, "--deb-systemd", s)
 			}
 
-
 			// append dependencies, suggests and conflicts
 			for _, d := range p.Target.DEBMetadata.Depends {
 				args = append(args, "-d", d)
@@ -315,7 +300,6 @@ func (c *FPMConfig) build() error {
 			for _, c := range p.Target.DEBMetadata.Conflicts {
 				args = append(args, "--conflicts", c)
 			}
-
 
 			// add scripts
 			if p.Target.DEBMetadata.BeforeInstall != "" {
@@ -337,7 +321,6 @@ func (c *FPMConfig) build() error {
 				args = append(args, "--after-upgrade", p.Target.DEBMetadata.AfterUpgrade)
 			}
 
-
 			// handle systemd units
 			if p.Target.DEBMetadata.SystemdEnable == true {
 				args = append(args, "--deb-systemd-enable")
@@ -349,19 +332,15 @@ func (c *FPMConfig) build() error {
 				args = append(args, "--deb-systemd-restart-after-upgrade")
 			}
 
-
 		}
-
 
 		// append arguments
 		for _, a := range p.Arguments {
 			args = append(args, a)
 		}
 
-
 		// create the actual command
 		buildCommand := exec.Command("fpm", args...)
-
 
 		output, err := buildCommand.CombinedOutput()
 		fmt.Printf(string(output))
@@ -371,7 +350,6 @@ func (c *FPMConfig) build() error {
 			fmt.Printf("FPM command failed\n")
 			os.Exit(2)
 		}
-
 
 		// print newlines to separate next package
 		fmt.Printf("\n\n")
@@ -395,6 +373,5 @@ func main() {
 	if err := c.build(); err != nil {
 		fmt.Printf(err.Error())
 	}
-
 
 }
