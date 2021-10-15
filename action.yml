@@ -3,4 +3,4 @@ name: 'Create Packages'
 description: 'creates debian packages using the tool fpm'
 runs:
   using: 'docker'
-  image: 'paprikant/action-package'
+  image: 'docker://paprikant/action-package:v0.0.3'
