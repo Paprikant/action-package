@@ -243,7 +243,7 @@ func (c *FPMConfig) build() error {
 			} else {
 				// for a branch set the branch name as version
 				// additionally use the GITHUB_RUN_NUMBER to always remember which package is the latest
-				version = fmt.Sprintf("%s.%s", matches[0][2], os.Getenv("GITHUB_RUN_NUMBER"))
+				version = fmt.Sprintf("%s.%s", os.Getenv("GITHUB_RUN_NUMBER"), matches[0][2])
 			}
 		} else {
 			// version does not match the GITHUB_REF format - just use it as its given

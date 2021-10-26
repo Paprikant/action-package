@@ -1,10 +1,16 @@
 # action-package
 
+This action builds packages from your code using [fpm](https://github.com/jordansissel/fpm)
+
+Your packages must be specified in a file called packages.yml in your project root. 
+The fields that can be provided in packages.yaml correspond to fpm command line flags and all given values will be
+appended to the fpm command.
+
+For possible fields refer to the usage example below.
 
 ## usage example
 
-To get started quickly refer to the complete packages.yml below.
-It contains all parameters that are currently supportet.
+The example below contains all flag values that can be passed to fpm as of now
 
 ```yaml
 # key packages contains an array of packages to build
