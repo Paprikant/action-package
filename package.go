@@ -32,6 +32,8 @@ type FPMConfig struct {
 			// Excludes is used with mode "dir"
 			// paths to files that are explicitly not part of the packages source files
 			Excludes []string `yaml:"excludes"`
+
+			Chdir string `yaml:"chdir"`
 		} `yaml:"source"`
 
 		// section Target of the fpm config
@@ -258,6 +260,10 @@ func (c *FPMConfig) build() error {
 			for _, e := range p.Source.Excludes {
 				args = append(args, fmt.Sprintf("-x %s", e))
 			}
+
+                        if p.Source.Chdir != "" {
+                                args = append(args, "-C", p.Source.Chdir)
+                        }
 		}
 
 		// special flags for the "deb" target mode
