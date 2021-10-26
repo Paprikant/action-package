@@ -180,7 +180,7 @@ func (c *FPMConfig) check() error {
 		if p.Source.Mode == "dir" {
 
 			// check whether directories were provided
-			if len(p.Arguments) < 1 {
+			if len(p.Arguments) < 1 && p.Source.Chdir == "" {
 				return ConfigError{
 					packageEntry: p.Name,
 					field:        "arguments",
