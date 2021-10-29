@@ -79,7 +79,7 @@ type FPMConfig struct {
 
 				// script tags
 				BeforeInstall string `yaml:"before_install"`
-				AfterInstall  string
+				AfterInstall  string `yaml:"after_install"`
 
 				BeforeRemove string `yaml:"before_remove"`
 				AfterRemove  string `yaml:"after_remove"`
