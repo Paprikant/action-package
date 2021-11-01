@@ -45,55 +45,52 @@ type FPMConfig struct {
 			// a valid configuration using "deb" needs flags "name"
 			Mode string `yaml:"mode"`
 
-			// DEBMetadata
-			// metadata specific to debian packages
-			DEBMetadata struct {
-				// package Version *REQUIRED*
-				Version string `yaml:"version"`
 
-				// Maintainer of the package *OPTIONAL*
-				// should be an email address
-				Maintainer string `yaml:"maintainer"`
+			// package Version *REQUIRED*
+			Version string `yaml:"version"`
 
-				// Vendor of the package *OPTIONAL*
-				Vendor string `yaml:"vendor"`
+			// Maintainer of the package *OPTIONAL*
+			// should be an email address
+			Maintainer string `yaml:"maintainer"`
 
-				// project URL *OPTIONAL*
-				// will be displayed in the packages metadata alongside the description
-				URL string `yaml:"url"`
+			// Vendor of the package *OPTIONAL*
+			Vendor string `yaml:"vendor"`
 
-				License string `yaml:"license"`
+			// project URL *OPTIONAL*
+			// will be displayed in the packages metadata alongside the description
+			URL string `yaml:"url"`
 
-				Description string `yaml:"description"`
+			License string `yaml:"license"`
 
-				// special file tags
-				Directories []string `yaml:"directories"`
-				ConfigFiles []string `yaml:"config_files"`
-				Systemd     []string `yaml:"systemd"`
+			Description string `yaml:"description"`
 
-				// dependency management
-				Depends       []string `yaml:"depends"`
-				Suggests      []string `yaml:"suggests"`
-				NoAutoDepends bool     `yaml:"no_auto_depends"`
-				Conflicts     []string `yaml:"conflicts"`
+			// special file tags
+			Directories []string `yaml:"directories"`
+			ConfigFiles []string `yaml:"config_files"`
+			Systemd     []string `yaml:"systemd"`
 
-				// script tags
-				BeforeInstall string `yaml:"before_install"`
-				AfterInstall  string `yaml:"after_install"`
+			// dependency management
+			Depends       []string `yaml:"depends"`
+			Suggests      []string `yaml:"suggests"`
+			NoAutoDepends bool     `yaml:"no_auto_depends"`
+			Conflicts     []string `yaml:"conflicts"`
 
-				BeforeRemove string `yaml:"before_remove"`
-				AfterRemove  string `yaml:"after_remove"`
+			// script tags
+			BeforeInstall string `yaml:"before_install"`
+			AfterInstall  string `yaml:"after_install"`
 
-				BeforeUpgrade string `yaml:"before_upgrade"`
-				AfterUpgrade  string `yaml:"after_upgrade"`
+			BeforeRemove string `yaml:"before_remove"`
+			AfterRemove  string `yaml:"after_remove"`
 
-				SystemdEnable              bool `yaml:"systemd_enable"`
-				SystemdAutoStart           bool `yaml:"systemd_auto_start"`
-				SystemdRestartAfterUpgrade bool `yaml:"systemd_restart_after_upgrade"`
-			} `yaml:"deb_metadata"`
+			BeforeUpgrade string `yaml:"before_upgrade"`
+			AfterUpgrade  string `yaml:"after_upgrade"`
+
+			SystemdEnable              bool `yaml:"systemd_enable"`
+			SystemdAutoStart           bool `yaml:"systemd_auto_start"`
+			SystemdRestartAfterUpgrade bool `yaml:"systemd_restart_after_upgrade"`
 		}
 
-		Arguments []string
+		Paths []string `yaml:"paths""`
 	}
 }
 
@@ -180,7 +177,7 @@ func (c *FPMConfig) check() error {
 		if p.Source.Mode == "dir" {
 
 			// check whether directories were provided
-			if len(p.Arguments) < 1 && p.Source.Chdir == "" {
+			if len(p.Paths) < 1 && p.Source.Chdir == "" {
 				return ConfigError{
 					packageEntry: p.Name,
 					field:        "arguments",
@@ -202,7 +199,7 @@ func (c *FPMConfig) check() error {
 
 		// checks for target mode "deb"
 		if p.Target.Mode == "deb" {
-			if p.Target.DEBMetadata.Version == "" {
+			if p.Target.Version == "" {
 				return ConfigError{
 					packageEntry: p.Name,
 					field:        "target.deb_metadata.version",
@@ -235,7 +232,7 @@ func (c *FPMConfig) build() error {
 		//    * refs/tags/<name> if the build is triggered for a tag
 		var gitHubDetect = regexp.MustCompile("^refs/(tags|heads)/([0-9a-zA-Z-.]+)$")
 		var version string
-		matches := gitHubDetect.FindAllStringSubmatch(p.Target.DEBMetadata.Version, -1)
+		matches := gitHubDetect.FindAllStringSubmatch(p.Target.Version, -1)
 
 		// if the version matches GITHUB_REF format
 		if len(matches) == 1 {
@@ -249,7 +246,7 @@ func (c *FPMConfig) build() error {
 			}
 		} else {
 			// version does not match the GITHUB_REF format - just use it as its given
-			version = p.Target.DEBMetadata.Version
+			version = p.Target.Version
 		}
 
 		args = append(args, "-v", version)
@@ -272,76 +269,76 @@ func (c *FPMConfig) build() error {
 			args = append(args, "-n", p.Name)
 
 			// metadata flags
-			if p.Target.DEBMetadata.Maintainer != "" {
-				args = append(args, "-m", p.Target.DEBMetadata.Maintainer)
+			if p.Target.Maintainer != "" {
+				args = append(args, "-m", p.Target.Maintainer)
 			}
-			if p.Target.DEBMetadata.URL != "" {
-				args = append(args, "--url", p.Target.DEBMetadata.URL)
+			if p.Target.URL != "" {
+				args = append(args, "--url", p.Target.URL)
 			}
-			if p.Target.DEBMetadata.Vendor != "" {
-				args = append(args, "--vendor", p.Target.DEBMetadata.Vendor)
+			if p.Target.Vendor != "" {
+				args = append(args, "--vendor", p.Target.Vendor)
 			}
-			if p.Target.DEBMetadata.Vendor != "" {
-				args = append(args, "--license", p.Target.DEBMetadata.License)
+			if p.Target.Vendor != "" {
+				args = append(args, "--license", p.Target.License)
 			}
 
 			// tag important files
-			for _, d := range p.Target.DEBMetadata.Directories {
+			for _, d := range p.Target.Directories {
 				args = append(args, "--directories", d)
 			}
-			for _, c := range p.Target.DEBMetadata.ConfigFiles {
+			for _, c := range p.Target.ConfigFiles {
 				args = append(args, "--deb-config", c)
 			}
-			for _, s := range p.Target.DEBMetadata.Systemd {
+			for _, s := range p.Target.Systemd {
 				args = append(args, "--deb-systemd", s)
 			}
 
 			// append dependencies, suggests and conflicts
-			for _, d := range p.Target.DEBMetadata.Depends {
+			for _, d := range p.Target.Depends {
 				args = append(args, "-d", d)
 			}
-			for _, s := range p.Target.DEBMetadata.Suggests {
+			for _, s := range p.Target.Suggests {
 				args = append(args, "--deb-suggests", s)
 			}
-			for _, c := range p.Target.DEBMetadata.Conflicts {
+			for _, c := range p.Target.Conflicts {
 				args = append(args, "--conflicts", c)
 			}
 
 			// add scripts
-			if p.Target.DEBMetadata.BeforeInstall != "" {
-				args = append(args, "--before-install", p.Target.DEBMetadata.BeforeInstall)
+			if p.Target.BeforeInstall != "" {
+				args = append(args, "--before-install", p.Target.BeforeInstall)
 			}
-			if p.Target.DEBMetadata.AfterInstall != "" {
-				args = append(args, "--after-install", p.Target.DEBMetadata.AfterInstall)
+			if p.Target.AfterInstall != "" {
+				args = append(args, "--after-install", p.Target.AfterInstall)
 			}
-			if p.Target.DEBMetadata.BeforeRemove != "" {
-				args = append(args, "--before-remove", p.Target.DEBMetadata.BeforeRemove)
+			if p.Target.BeforeRemove != "" {
+				args = append(args, "--before-remove", p.Target.BeforeRemove)
 			}
-			if p.Target.DEBMetadata.AfterRemove != "" {
-				args = append(args, "--after-remove", p.Target.DEBMetadata.AfterRemove)
+			if p.Target.AfterRemove != "" {
+				args = append(args, "--after-remove", p.Target.AfterRemove)
 			}
-			if p.Target.DEBMetadata.BeforeUpgrade != "" {
-				args = append(args, "--before-upgrade", p.Target.DEBMetadata.BeforeUpgrade)
+			if p.Target.BeforeUpgrade != "" {
+				args = append(args, "--before-upgrade", p.Target.BeforeUpgrade)
 			}
-			if p.Target.DEBMetadata.AfterUpgrade != "" {
-				args = append(args, "--after-upgrade", p.Target.DEBMetadata.AfterUpgrade)
+			if p.Target.AfterUpgrade != "" {
+				args = append(args, "--after-upgrade", p.Target.AfterUpgrade)
 			}
 
 			// handle systemd units
-			if p.Target.DEBMetadata.SystemdEnable == true {
+			if p.Target.SystemdEnable == true {
 				args = append(args, "--deb-systemd-enable")
 			}
-			if p.Target.DEBMetadata.SystemdAutoStart == true {
+			if p.Target.SystemdAutoStart == true {
 				args = append(args, "--deb-systemd-auto-start")
 			}
-			if p.Target.DEBMetadata.SystemdRestartAfterUpgrade == true {
+			if p.Target.SystemdRestartAfterUpgrade == true {
 				args = append(args, "--deb-systemd-restart-after-upgrade")
 			}
 
 		}
 
 		// append arguments
-		for _, a := range p.Arguments {
+		for _, a := range p.Paths {
 			args = append(args, a)
 		}
 

@@ -20,86 +20,86 @@ packages:
       # using mode deb
       mode: deb
 
-      deb_metadata:
-        # version of the package
-        # this field is required for deb packages and will be checked for
-        version:      1.0
+
+      # version of the package
+      # this field is required for deb packages and will be checked for
+      version:      1.0
 
 
-        # the following metadata fields serve information purposes
-        # they exist to be displayed by package managers like aptly and are all optional
+      # the following metadata fields serve information purposes
+      # they exist to be displayed by package managers like aptly and are all optional
 
-        # maintainer should contain an email address and will be displayed by apt *optional*
-        maintainer:   max.mustermann@example.com
-        # vendor of the package *optional*
-        vendor:       example AG
-        # an URL to display along with the package information *optional*
-        url:          www.example.com
-        # refer to a license here - any string is accepted *optional*
-        license:      apache 2.0
-        # description to display in aptly *optional*
-        description:  |
-          This is an example package.
-          Files are taken from local directory bla and packaged as example_1.0_amd64.deb
-
-
-        # the following metadata fields provide additional information about files
-        # contained in the package
-
-        # directories that are explicitly owned by the package can be added to this array
-        directories:
-          - /opt/example
-          - /opt/example/conf
-        # config_files that need to be preserved across updates
-        config_files:
-          - /opt/example/conf/example.conf
-        # systemd units that cone with the package
-        systemd:
-          - lib/systemd/example.service
+      # maintainer should contain an email address and will be displayed by apt *optional*
+      maintainer:   max.mustermann@example.com
+      # vendor of the package *optional*
+      vendor:       example AG
+      # an URL to display along with the package information *optional*
+      url:          www.example.com
+      # refer to a license here - any string is accepted *optional*
+      license:      apache 2.0
+      # description to display in aptly *optional*
+      description:  |
+        This is an example package.
+        Files are taken from local directory bla and packaged as example_1.0_amd64.deb
 
 
-        # the following metadata fields provides information on how the package interacts
-        # with other deb packages
+      # the following metadata fields provide additional information about files
+      # contained in the package
 
-        # dependencies of the package - those need to be installed
-        dependencies:
-          # require a package name
-          - php7.2
-          # require a specific minimal version
-          - nodejs >= 12.10
-
-        # suggested package to go along with the installation - those do not need to be installed
-        suggests:
-          - example-utils
-
-        # set no_auto_depends to prevent fpm from automatically guessing and adding dependencies
-        no_auto_depends: true
+      # directories that are explicitly owned by the package can be added to this array
+      directories:
+        - /opt/example
+        - /opt/example/conf
+      # config_files that need to be preserved across updates
+      config_files:
+        - /opt/example/conf/example.conf
+      # systemd units that cone with the package
+      systemd:
+        - lib/systemd/example.service
 
 
-        # the following metadata fields attach shell scripts to specific installation events
+      # the following metadata fields provides information on how the package interacts
+      # with other deb packages
 
-        # scripts for handling package installation
-        before_install: before-install.sh
-        after_install:  after-install.sh
-        # scripts for handling package removal
-        before_remove:  before-remove.sh
-        after_remove:   after-remove.sh
-        # scripts for handling package upgrades
-        before_upgrade: before-upgrade.sh
-        after_upgrade:  after-upgrade.sh
+      # dependencies of the package - those need to be installed
+      dependencies:
+        # require a package name
+        - php7.2
+        # require a specific minimal version
+        - nodejs >= 12.10
+
+      # suggested package to go along with the installation - those do not need to be installed
+      suggests:
+        - example-utils
+
+      # set no_auto_depends to prevent fpm from automatically guessing and adding dependencies
+      no_auto_depends: true
 
 
-        # the following metadata fields specify how to handle systemd units
-        # they apply to all units specified in "systemd" key above
+      # the following metadata fields attach shell scripts to specific installation events
 
-        # enable units after installation
-        systemd_enable: true
-        # start units after installation
-        systemd_auto_start: true
-        # re-start units after upgrade
-        systemd_restart_after_upgrade: true
+      # scripts for handling package installation
+      before_install: before-install.sh
+      after_install:  after-install.sh
+      # scripts for handling package removal
+      before_remove:  before-remove.sh
+      after_remove:   after-remove.sh
+      # scripts for handling package upgrades
+      before_upgrade: before-upgrade.sh
+      after_upgrade:  after-upgrade.sh
 
-    # arguments will be appended to the fpm command (as arguments i.e. with no preceding flag)
-    arguments:
-      # since we used target mode dir the first argument will be interpreted as a path
+
+      # the following metadata fields specify how to handle systemd units
+      # they apply to all units specified in "systemd" key above
+
+      # enable units after installation
+      systemd_enable: true
+      # start units after installation
+      systemd_auto_start: true
+      # re-start units after upgrade
+      systemd_restart_after_upgrade: true
+
+    # paths will be appended to fpm execution
+    paths:
       - bla
+      - dir=/etc/dir
