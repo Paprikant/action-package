@@ -90,7 +90,7 @@ type FPMConfig struct {
 			SystemdRestartAfterUpgrade bool `yaml:"systemd_restart_after_upgrade"`
 		}
 
-		Paths []string `yaml:"paths""`
+		Paths []string `yaml:"paths"`
 	}
 }
 
@@ -202,7 +202,7 @@ func (c *FPMConfig) check() error {
 			if p.Target.Version == "" {
 				return ConfigError{
 					packageEntry: p.Name,
-					field:        "target.deb_metadata.version",
+					field:        "target.version",
 					message:      "debian packages require a version",
 				}
 			}
