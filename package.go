@@ -262,7 +262,7 @@ func (c *FPMConfig) build() error {
 				args = append(args, "--directories", d)
 			}
 			for _, c := range p.Target.ConfigFiles {
-				args = append(args, "--deb-config", c)
+				args = append(args, "--config-files", c)
 			}
 			for _, s := range p.Target.Systemd {
 				args = append(args, "--deb-systemd", s)
