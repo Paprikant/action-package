@@ -225,31 +225,7 @@ func (c *FPMConfig) build() error {
 		}
 
 		// set version from file
-		//
-		// a SPECIAL CASE applies here where we extract a version from the github actions variable GITHUB_REF
-		// GITHUB_REF is set to either:
-		//    * refs/heads/<name> if the build is triggered for a branch
-		//    * refs/tags/<name> if the build is triggered for a tag
-		var gitHubDetect = regexp.MustCompile("^refs/(tags|heads)/([0-9a-zA-Z-.]+)$")
-		var version string
-		matches := gitHubDetect.FindAllStringSubmatch(p.Target.Version, -1)
-
-		// if the version matches GITHUB_REF format
-		if len(matches) == 1 {
-			if matches[0][1] == "tags" {
-				// for a tag set the tag name as version
-				version = matches[0][2]
-			} else {
-				// for a branch set the branch name as version
-				// additionally use the GITHUB_RUN_NUMBER to always remember which package is the latest
-				version = fmt.Sprintf("%s.%s", os.Getenv("GITHUB_RUN_NUMBER"), matches[0][2])
-			}
-		} else {
-			// version does not match the GITHUB_REF format - just use it as its given
-			version = p.Target.Version
-		}
-
-		args = append(args, "-v", version)
+		args = append(args, "-v", p.Target.Version)
 
 		// special flags for the "dir" source mode
 		if p.Source.Mode == "dir" {
@@ -278,7 +254,7 @@ func (c *FPMConfig) build() error {
 			if p.Target.Vendor != "" {
 				args = append(args, "--vendor", p.Target.Vendor)
 			}
-			if p.Target.Vendor != "" {
+			if p.Target.License != "" {
 				args = append(args, "--license", p.Target.License)
 			}
 
@@ -341,6 +317,8 @@ func (c *FPMConfig) build() error {
 		for _, a := range p.Paths {
 			args = append(args, a)
 		}
+
+		fmt.Printf("%s %s", "fpm", strings.Join(args, " "))
 
 		// create the actual command
 		buildCommand := exec.Command("fpm", args...)

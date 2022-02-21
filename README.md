@@ -131,25 +131,3 @@ packages:
     .
 ```
 
-## version from github
-A common use case is using git tags as version numbers.
-Tags are accessible to the GitHub action via the GITHUB_REF environment variable.
-
-```yaml
-packages:
-    .
-    .
-    .
-    version: ${GITHUB_REF}
-    .
-    .
-    .
-```
-
-### tags
-When a tag is build, GITHUB_REF contains the string "refs/tags/<tag_name>". If such a string appears as the version <tag_name> is extracted and used as version instead.
-
-### branches
-When a branch is build, GITHUB_REF contains the string "refs/heads/<branch_name>". If such a string appears as the version <branch_name> is extracted and the resulting
-version is <branch_name>.<github_run_number>.
-
