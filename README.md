@@ -76,7 +76,7 @@ packages:
       # with other deb packages
 
       # dependencies of the package - those need to be installed
-      dependencies:
+      depends:
         # require a package name
         - php7.2
         # require a specific minimal version
