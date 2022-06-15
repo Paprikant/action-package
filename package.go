@@ -48,6 +48,9 @@ type FPMConfig struct {
 			// package Version *REQUIRED*
 			Version string `yaml:"version"`
 
+			// package architecture - defaults to local architecture of whatever machine is building the package
+			Architecture string `yaml:"architecture"`
+
 			// Maintainer of the package *OPTIONAL*
 			// should be an email address
 			Maintainer string `yaml:"maintainer"`
@@ -266,6 +269,10 @@ func (c *FPMConfig) build() error {
 			}
 			for _, s := range p.Target.Systemd {
 				args = append(args, "--deb-systemd", s)
+			}
+
+			if p.Target.Architecture != "" {
+				args = append(args, "-a", p.Target.Architecture)
 			}
 
 			// append dependencies, suggests and conflicts

@@ -25,6 +25,10 @@ packages:
       # this field is required for deb packages and will be checked for
       version:      1.0
 
+      # architecture of the package
+      # defaults to architecture of the building machine
+      # all indicates an architecture independent package
+      architecture: all
 
       # the following metadata fields serve information purposes
       # they exist to be displayed by package managers like aptly and are all optional
