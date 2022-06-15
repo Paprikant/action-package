@@ -58,10 +58,10 @@ type FPMConfig struct {
 			// project URL *OPTIONAL*
 			// will be displayed in the packages metadata alongside the description
 			URL string `yaml:"url"`
-
 			License string `yaml:"license"`
-
 			Description string `yaml:"description"`
+
+			Provides []string `yaml:"provides"`
 
 			// special file tags
 			Directories []string `yaml:"directories"`
@@ -272,6 +272,9 @@ func (c *FPMConfig) build() error {
 			for _, d := range p.Target.Depends {
 				args = append(args, "-d", d)
 			}
+			for _, p := range p.Target.Provides {
+				args = append(args, "--provides", p)
+			}
 			for _, s := range p.Target.Suggests {
 				args = append(args, "--deb-suggests", s)
 			}
@@ -298,6 +301,8 @@ func (c *FPMConfig) build() error {
 			if p.Target.AfterUpgrade != "" {
 				args = append(args, "--after-upgrade", p.Target.AfterUpgrade)
 			}
+
+
 
 			// handle systemd units
 			if p.Target.SystemdEnable == true {

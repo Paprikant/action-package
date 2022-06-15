@@ -72,6 +72,10 @@ packages:
       suggests:
         - example-utils
 
+      # specify software that is provided by this package
+      provides:
+        - alternate-name # apt install alternate-name will automatically select this package
+
       # set no_auto_depends to prevent fpm from automatically guessing and adding dependencies
       no_auto_depends: true
 
