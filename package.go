@@ -259,6 +259,10 @@ func (c *FPMConfig) build() error {
 			if p.Target.License != "" {
 				args = append(args, "--license", p.Target.License)
 			}
+                        if p.Target.Description != "" {
+                                args = append(args, "--description", p.Target.Description)
+                        }
+
 
 			// tag important files
 			for _, d := range p.Target.Directories {
