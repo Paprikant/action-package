@@ -182,8 +182,8 @@ func (c *FPMConfig) check() error {
 			if len(p.Paths) < 1 && p.Source.Chdir == "" {
 				return ConfigError{
 					packageEntry: p.Name,
-					field:        "arguments",
-					message:      "for target mode dir at least one argument is required (a directory to package)",
+					field:        "paths",
+					message:      "for mode dir it is required to specify a list of file paths (package.paths) or a chdir (package.source.chdir)",
 				}
 			}
 		}
