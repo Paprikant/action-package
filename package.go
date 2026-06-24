@@ -324,6 +324,8 @@ func (c *FPMConfig) build() error {
 			}
 			if p.Target.SystemdRestartAfterUpgrade == true {
 				args = append(args, "--deb-systemd-restart-after-upgrade")
+			} else {
+				args = append(args, "--no-deb-systemd-restart-after-upgrade")
 			}
 
 		}
